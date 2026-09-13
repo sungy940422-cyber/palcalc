@@ -3,6 +3,8 @@ name: Test OVERAGUYO live recognition
 on:
   push:
     branches: [overaguyo-live-recognition]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
