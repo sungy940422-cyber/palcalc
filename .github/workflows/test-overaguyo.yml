@@ -28,4 +28,3 @@ jobs:
         with:
           name: OVERAGUYO-Palworld-Breeding-Assistant
           path: publish/Bundled/**
-          archive: false
