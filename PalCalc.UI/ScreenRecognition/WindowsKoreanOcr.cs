@@ -35,7 +35,7 @@ namespace PalCalc.UI.ScreenRecognition
 
             using var encoded = new MemoryStream();
             var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(enlarged));
+            encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(enlarged));
             encoder.Save(encoded);
             encoded.Position = 0;
 
@@ -47,7 +47,7 @@ namespace PalCalc.UI.ScreenRecognition
             }
             randomAccess.Seek(0);
 
-            var decoder = await BitmapDecoder.CreateAsync(randomAccess);
+            var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(randomAccess);
             using var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
                 BitmapPixelFormat.Bgra8,
                 BitmapAlphaMode.Premultiplied
