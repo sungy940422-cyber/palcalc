@@ -1,0 +1,29 @@
+name: Test OVERAGUYO live recognition
+
+on:
+  push:
+    branches: [overaguyo-live-recognition]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore
+        run: dotnet restore PalCalc.sln /p:Platform=x64
+      - name: Build
+        run: dotnet build PalCalc.sln --configuration Release /p:Platform=x64 --no-restore
+      - name: Test screen recognition
+        run: dotnet test PalCalc.UI.Tests/PalCalc.UI.Tests.csproj --configuration Release /p:Platform=x64 --no-build --filter ScreenRecognitionTests
+      - name: Publish single executable
+        run: dotnet publish PalCalc.UI/PalCalc.UI.csproj --configuration Release -r win-x64 /p:Platform=x64 /p:PublishProfile=Properties/PublishProfiles/Bundled.pubxml --output publish/Bundled
+      - name: Upload executable
+        uses: actions/upload-artifact@v7
+        with:
+          name: OVERAGUYO-Palworld-Breeding-Assistant
+          path: publish/Bundled/*.exe
+          archive: false
