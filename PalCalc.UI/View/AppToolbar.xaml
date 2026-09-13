@@ -35,6 +35,12 @@
                       IsChecked="{Binding IsDarkTheme, Mode=OneWay}"
                       Command="{Binding UseDarkThemeCommand}" />
         </MenuItem>
+        <MenuItem Header="화면 인식" Padding="5">
+            <MenuItem Header="{Binding LiveRecognitionActionLabel}"
+                      Command="{Binding ToggleLiveRecognitionCommand}" />
+            <Separator />
+            <MenuItem Header="{Binding LiveRecognitionStatus}" IsEnabled="False" />
+        </MenuItem>
         <MenuItem Header="Debug" Padding="5" Name="DebugMenuItem">
             <MenuItem Header="Translation Debugger" Click="TranslationDebugger_Click" />
         </MenuItem>
