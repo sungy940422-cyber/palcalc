@@ -24,6 +24,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="ScreenRecognition\Profiles\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Remove="Resources\Cake_Special.png" />
     <None Remove="Resources\DungeonSmall.png" />
     <None Remove="Resources\Elements\Dark.png" />
