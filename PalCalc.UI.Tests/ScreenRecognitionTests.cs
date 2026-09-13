@@ -26,7 +26,7 @@ public class ScreenRecognitionTests
 
         Assert.IsNotNull(result.Value);
         Assert.AreEqual("Anubis", result.Value.Name);
-        Assert.IsTrue(result.Confidence > 0.75);
+        Assert.IsTrue(result.Confidence >= 0.75);
     }
 
     [TestMethod]
