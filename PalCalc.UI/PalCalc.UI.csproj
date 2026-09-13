@@ -26,6 +26,7 @@
   <ItemGroup>
     <None Update="ScreenRecognition\Profiles\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
     <None Remove="Resources\Cake_Special.png" />
     <None Remove="Resources\DungeonSmall.png" />
