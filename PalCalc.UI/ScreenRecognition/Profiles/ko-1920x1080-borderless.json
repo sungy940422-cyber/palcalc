@@ -1,0 +1,38 @@
+{
+  "id": "ko-1920x1080-borderless",
+  "displayName": "한국어 1920×1080 테두리 없는 창",
+  "clientWidth": 1920,
+  "clientHeight": 1080,
+  "language": "ko",
+  "windowMode": "borderless",
+  "palbox": {
+    "boxGrid": {
+      "firstCenterX": 699,
+      "firstCenterY": 229,
+      "columnSpacing": 82.5,
+      "rowSpacing": 84.5,
+      "columns": 6,
+      "rows": 5,
+      "iconRadius": 36
+    },
+    "baseGrid": {
+      "firstCenterX": 699,
+      "firstCenterY": 729,
+      "columnSpacing": 82.5,
+      "rowSpacing": 83,
+      "columns": 6,
+      "rows": 3,
+      "iconRadius": 36
+    }
+  },
+  "details": {
+    "name": { "x": 278, "y": 171, "width": 350, "height": 52 },
+    "gender": { "x": 726, "y": 171, "width": 58, "height": 52 },
+    "passives": [
+      { "x": 165, "y": 815, "width": 252, "height": 38 },
+      { "x": 425, "y": 815, "width": 252, "height": 38 },
+      { "x": 165, "y": 855, "width": 252, "height": 38 },
+      { "x": 425, "y": 855, "width": 252, "height": 38 }
+    ]
+  }
+}
