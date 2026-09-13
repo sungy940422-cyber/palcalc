@@ -92,6 +92,7 @@ namespace PalCalc.UI.ViewModel
         [RelayCommand(CanExecute = nameof(CanBeginNavigateSaveSelectionPage))]
         private void BeginNavigateSaveSelectionPage()
         {
+            toolbarVM.SetActiveSave(null);
             var loadingPage = new LoadingPage();
             Content = loadingPage;
             ShowToolbar = false;
@@ -190,6 +191,7 @@ namespace PalCalc.UI.ViewModel
 
             var saveOperations = new CommonSaveOperationsViewModel(BeginNavigateSaveSelectionPageCommand, selectedSave.Parent, selectedSave);
             var vm = new SolverPageViewModel(Dispatcher.CurrentDispatcher, saveOperations, selectedSave, LoadPalTargets(selectedSave));
+            toolbarVM.SetActiveSave(selectedSave);
             Content = new SolverPage(vm);
         }
 
