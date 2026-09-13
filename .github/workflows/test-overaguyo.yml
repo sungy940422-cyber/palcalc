@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: dotnet build PalCalc.sln --configuration Release /p:Platform=x64 --no-restore
       - name: Test screen recognition
-        run: dotnet test PalCalc.UI.Tests/PalCalc.UI.Tests.csproj --configuration Release /p:Platform=x64 --no-build --filter ScreenRecognitionTests
+        run: dotnet test PalCalc.UI.Tests/PalCalc.UI.Tests.csproj --configuration Release --filter ScreenRecognitionTests
       - name: Publish single executable
         run: dotnet publish PalCalc.UI/PalCalc.UI.csproj --configuration Release -r win-x64 /p:Platform=x64 /p:PublishProfile=Properties/PublishProfiles/Bundled.pubxml --output publish/Bundled
       - name: Upload executable
