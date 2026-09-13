@@ -9,6 +9,7 @@ using PalCalc.UI.Localization;
 using PalCalc.UI.Model;
 using PalCalc.UI.Model.CSV;
 using PalCalc.UI.Model.Service;
+using PalCalc.UI.ScreenRecognition;
 using PalCalc.UI.View;
 using PalCalc.UI.View.Inspector;
 using PalCalc.UI.ViewModel.Inspector;
@@ -43,6 +44,25 @@ namespace PalCalc.UI.ViewModel
         private readonly Dispatcher dispatcher;
         private readonly AppSettings settings;
         private Uri currentPalCalcColorScheme = palCalcDarkColorScheme;
+        private LiveRecognitionController liveRecognition;
+        private ProvisionalPalSaveBridge provisionalPalBridge;
+        private SaveGameViewModel activeSave;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LiveRecognitionActionLabel))]
+        private bool isLiveRecognitionRunning;
+
+        [ObservableProperty]
+        private string liveRecognitionStatus = "중지됨";
+
+        public string LiveRecognitionActionLabel => IsLiveRecognitionRunning ? "자동 인식 중지" : "자동 인식 시작";
+
+        public void SetActiveSave(SaveGameViewModel save)
+        {
+            activeSave = save;
+            if (provisionalPalBridge != null)
+                provisionalPalBridge.ActiveSave = save;
+        }
 
         public AppToolbarViewModel(Dispatcher dispatcher, AppSettings settings)
         {
@@ -65,6 +85,48 @@ namespace PalCalc.UI.ViewModel
 
         public bool IsDarkTheme => settings.IsDarkTheme;
         public bool IsLightTheme => !settings.IsDarkTheme;
+
+        [RelayCommand]
+        private void ToggleLiveRecognition()
+        {
+            try
+            {
+                if (liveRecognition == null)
+                {
+                    liveRecognition = new LiveRecognitionController(PalDB.LoadEmbedded());
+                    provisionalPalBridge = new ProvisionalPalSaveBridge(liveRecognition)
+                    {
+                        ActiveSave = activeSave
+                    };
+                    provisionalPalBridge.StatusChanged += status => SetLiveRecognitionStatus(status);
+                    liveRecognition.StatusChanged += status =>
+                        SetLiveRecognitionStatus(status);
+                }
+
+                if (liveRecognition.IsRunning)
+                    liveRecognition.Stop();
+                else
+                    liveRecognition.Start();
+
+                IsLiveRecognitionRunning = liveRecognition.IsRunning;
+                if (!IsLiveRecognitionRunning)
+                    LiveRecognitionStatus = "중지됨";
+            }
+            catch (Exception ex)
+            {
+                IsLiveRecognitionRunning = false;
+                LiveRecognitionStatus = ex.Message;
+                AdonisMessageBox.Show(App.Current.MainWindow, ex.Message, "화면 자동 인식");
+            }
+        }
+
+        private void SetLiveRecognitionStatus(string status)
+        {
+            if (dispatcher.CheckAccess())
+                LiveRecognitionStatus = status;
+            else
+                dispatcher.BeginInvoke(() => LiveRecognitionStatus = status);
+        }
 
         [RelayCommand]
         private void ExportCrashLog()
