@@ -36,7 +36,7 @@ namespace PalCalc.UI.ScreenRecognition
             if (IsRunning) return;
 
             cancellation = new CancellationTokenSource();
-            _ = MonitorLoop(cancellation.Token);
+            _ = Task.Run(() => MonitorLoop(cancellation.Token), cancellation.Token);
         }
 
         public void Stop()
