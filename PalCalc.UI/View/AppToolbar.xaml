@@ -38,6 +38,8 @@
         <MenuItem Header="화면 인식" Padding="5">
             <MenuItem Header="{Binding LiveRecognitionActionLabel}"
                       Command="{Binding ToggleLiveRecognitionCommand}" />
+            <MenuItem Header="최근 인식 보기"
+                      Command="{Binding OpenRecentRecognitionsCommand}" />
             <Separator />
             <MenuItem Header="{Binding LiveRecognitionStatus}" IsEnabled="False" />
         </MenuItem>
