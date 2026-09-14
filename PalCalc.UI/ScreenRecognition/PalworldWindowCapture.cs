@@ -73,7 +73,12 @@ namespace PalCalc.UI.ScreenRecognition
 
             try
             {
-                if (!PrintWindow(handle, memoryDc, PwRenderFullContent))
+                var printWindowSucceeded = PrintWindow(handle, memoryDc, PwRenderFullContent);
+                var image = CreateBitmapSource(bitmap);
+
+                // DirectX windows can report PrintWindow success while returning an all-black
+                // frame. In that case capture the visible borderless window from the desktop.
+                if (!printWindowSucceeded || IsNearlyBlack(image))
                 {
                     // Some DirectX modes reject PrintWindow. In borderless mode the desktop
                     // framebuffer is a safe read-only fallback while the game is visible.
@@ -89,15 +94,10 @@ namespace PalCalc.UI.ScreenRecognition
                     {
                         if (screenDc != IntPtr.Zero) ReleaseDC(IntPtr.Zero, screenDc);
                     }
+
+                    image = CreateBitmapSource(bitmap);
                 }
 
-                var image = Imaging.CreateBitmapSourceFromHBitmap(
-                    bitmap,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions()
-                );
-                image.Freeze();
                 return image;
             }
             finally
@@ -107,6 +107,40 @@ namespace PalCalc.UI.ScreenRecognition
                 DeleteDC(memoryDc);
                 ReleaseDC(handle, windowDc);
             }
+        }
+
+        private static BitmapSource CreateBitmapSource(IntPtr bitmap)
+        {
+            var image = Imaging.CreateBitmapSourceFromHBitmap(
+                    bitmap,
+                    IntPtr.Zero,
+                    Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions()
+                );
+            image.Freeze();
+            return image;
+        }
+
+        private static bool IsNearlyBlack(BitmapSource source)
+        {
+            const int width = 16;
+            const int height = 9;
+            var resized = new TransformedBitmap(
+                source,
+                new ScaleTransform(width / (double)source.PixelWidth, height / (double)source.PixelHeight)
+            );
+            var converted = new FormatConvertedBitmap(resized, PixelFormats.Bgra32, null, 0);
+            var pixels = new byte[width * height * 4];
+            converted.CopyPixels(pixels, width * 4, 0);
+
+            var darkPixels = 0;
+            for (var i = 0; i < pixels.Length; i += 4)
+            {
+                if (pixels[i] < 10 && pixels[i + 1] < 10 && pixels[i + 2] < 10)
+                    darkPixels++;
+            }
+
+            return darkPixels >= width * height * 0.95;
         }
 
         private static bool TryGetWindowBounds(IntPtr handle, out NativeRect bounds)
