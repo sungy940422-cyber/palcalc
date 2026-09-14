@@ -40,11 +40,11 @@ namespace PalCalc.UI.ScreenRecognition
             encoded.Position = 0;
 
             using var randomAccess = new InMemoryRandomAccessStream();
-            using (var output = randomAccess.AsStreamForWrite())
-            {
-                await encoded.CopyToAsync(output);
-                await output.FlushAsync();
-            }
+            // Disposing the adapter also disposes its underlying WinRT stream. Keep it
+            // alive until OCR has finished reading from randomAccess.
+            var output = randomAccess.AsStreamForWrite();
+            await encoded.CopyToAsync(output);
+            await output.FlushAsync();
             randomAccess.Seek(0);
 
             var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(randomAccess);
