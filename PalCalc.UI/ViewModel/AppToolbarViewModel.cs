@@ -103,21 +103,19 @@ namespace PalCalc.UI.ViewModel
                     };
                     provisionalPalBridge.StatusChanged += status => SetLiveRecognitionStatus(status);
                     provisionalPalBridge.PalConfirmed += confirmed =>
-                        dispatcher.BeginInvoke(() =>
-                        {
-                            var entry = RecentRecognitions.FirstOrDefault(x => x.Matches(confirmed));
-                            if (entry != null)
-                                entry.Status = "세이브 확인 완료";
-                        });
+                    {
+                        var entry = RecentRecognitions.FirstOrDefault(x => x.Matches(confirmed));
+                        if (entry != null)
+                            entry.Status = "세이브 확인 완료";
+                    };
                     liveRecognition.StatusChanged += status =>
                         SetLiveRecognitionStatus(status);
                     liveRecognition.ObservationEvaluated += observation =>
-                        dispatcher.BeginInvoke(() =>
-                        {
-                            RecentRecognitions.Insert(0, new RecentRecognitionItem(observation));
-                            while (RecentRecognitions.Count > 10)
-                                RecentRecognitions.RemoveAt(RecentRecognitions.Count - 1);
-                        });
+                    {
+                        RecentRecognitions.Insert(0, new RecentRecognitionItem(observation));
+                        while (RecentRecognitions.Count > 10)
+                            RecentRecognitions.RemoveAt(RecentRecognitions.Count - 1);
+                    };
                 }
 
                 if (liveRecognition.IsRunning)
