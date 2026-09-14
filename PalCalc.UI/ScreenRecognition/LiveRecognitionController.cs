@@ -49,7 +49,13 @@ namespace PalCalc.UI.ScreenRecognition
                 var observation = await recognizer.RecognizeAsync(regions);
                 if (observation?.CanBeAutomaticallyAdded != true)
                 {
-                    StatusChanged?.Invoke("팰 상세정보를 확인하는 중");
+                    var candidate = observation?.Pal?.LocalizedNames.GetValueOrElse(
+                        "ko",
+                        observation.Pal.Name
+                    ) ?? "이름 미확인";
+                    StatusChanged?.Invoke(
+                        $"인식 후보: {candidate} ({observation?.Confidence ?? 0:P0})"
+                    );
                     return;
                 }
 
