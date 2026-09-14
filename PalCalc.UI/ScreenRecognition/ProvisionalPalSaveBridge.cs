@@ -49,6 +49,7 @@ namespace PalCalc.UI.ScreenRecognition
         }
 
         public event Action<string> StatusChanged;
+        public event Action<PalInstance> PalConfirmed;
 
         public void Dispose()
         {
@@ -139,7 +140,11 @@ namespace PalCalc.UI.ScreenRecognition
                 .ToList();
 
             foreach (var item in confirmed)
+            {
+                if (item.ModelObject is PalInstance pal)
+                    PalConfirmed?.Invoke(pal);
                 container.Contents.Remove(item);
+            }
 
             if (container.Contents.Count == 0)
                 save.Customizations.CustomContainers.Remove(container);
