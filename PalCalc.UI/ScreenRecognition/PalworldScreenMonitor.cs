@@ -65,7 +65,6 @@ namespace PalCalc.UI.ScreenRecognition
                         DetailsChanged?.Invoke(details);
                     }
 
-                    StatusChanged?.Invoke("실시간 화면 인식 중");
                 }
                 catch (InvalidOperationException ex)
                 {
