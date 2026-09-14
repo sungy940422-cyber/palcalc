@@ -110,9 +110,19 @@ namespace PalCalc.UI.ViewModel
                     };
                     liveRecognition.StatusChanged += status =>
                         SetLiveRecognitionStatus(status);
+                    liveRecognition.RecognitionAttemptStarted += preview =>
+                    {
+                        RecentRecognitions.Insert(0, new RecentRecognitionItem(preview));
+                        while (RecentRecognitions.Count > 10)
+                            RecentRecognitions.RemoveAt(RecentRecognitions.Count - 1);
+                    };
                     liveRecognition.ObservationEvaluated += observation =>
                     {
-                        RecentRecognitions.Insert(0, new RecentRecognitionItem(observation));
+                        var completed = new RecentRecognitionItem(observation);
+                        if (RecentRecognitions.FirstOrDefault()?.IsPending == true)
+                            RecentRecognitions[0] = completed;
+                        else
+                            RecentRecognitions.Insert(0, completed);
                         while (RecentRecognitions.Count > 10)
                             RecentRecognitions.RemoveAt(RecentRecognitions.Count - 1);
                     };
