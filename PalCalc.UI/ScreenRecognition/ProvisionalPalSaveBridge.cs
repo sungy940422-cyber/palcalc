@@ -44,7 +44,10 @@ namespace PalCalc.UI.ScreenRecognition
                 activeSave = value;
 
                 if (activeSave?.Value != null)
+                {
                     activeSave.Value.Updated += ActiveSave_Updated;
+                    ClearStaleEntries(activeSave);
+                }
             }
         }
 
@@ -108,6 +111,17 @@ namespace PalCalc.UI.ScreenRecognition
             RunOnUiThread(() =>
             {
                 var customizations = save.Customizations;
+                var instance = ToPalInstance(observation, "");
+
+                // A Pal shown from the Palbox normally already exists in the loaded
+                // save. Confirm it directly instead of creating a temporary duplicate.
+                if ((save.CachedValue?.OwnedPals ?? []).Any(saved => Matches(instance, saved)))
+                {
+                    PalConfirmed?.Invoke(instance);
+                    StatusChanged?.Invoke($"세이브에서 확인: {KoreanName(observation.Pal)}");
+                    return;
+                }
+
                 var container = customizations.CustomContainers.FirstOrDefault(c => c.Label == ContainerLabel);
                 if (container == null)
                 {
@@ -115,10 +129,26 @@ namespace PalCalc.UI.ScreenRecognition
                     customizations.CustomContainers.Add(container);
                 }
 
-                var instance = ToPalInstance(observation, container.ContainerId);
+                instance.Location.ContainerId = container.ContainerId;
                 container.Contents.Add(new CustomPalInstanceViewModel(instance));
                 StatusChanged?.Invoke($"임시 목록에 추가: {KoreanName(observation.Pal)}");
             });
+        }
+
+        private static void ClearStaleEntries(SaveGameViewModel save)
+        {
+            var container = save?.Customizations?.CustomContainers
+                .FirstOrDefault(c => c.Label == ContainerLabel);
+            if (container == null) return;
+
+            foreach (var stale in container.Contents
+                .Where(x => x.ModelObject is PalInstance p &&
+                    p.InstanceId.StartsWith("screen-", StringComparison.Ordinal))
+                .ToList())
+                container.Contents.Remove(stale);
+
+            if (container.Contents.Count == 0)
+                save.Customizations.CustomContainers.Remove(container);
         }
 
         private void Storage_SaveReloaded(ISaveGame changedSave)
