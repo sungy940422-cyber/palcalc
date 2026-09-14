@@ -24,6 +24,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="ScreenRecognition\Profiles\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <EmbeddedResource Include="ScreenRecognition\Profiles\ko-1920x1080-borderless.json" />
     <None Remove="Resources\Cake_Special.png" />
     <None Remove="Resources\DungeonSmall.png" />
     <None Remove="Resources\Elements\Dark.png" />
