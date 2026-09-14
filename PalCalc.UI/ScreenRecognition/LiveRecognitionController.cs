@@ -33,6 +33,7 @@ namespace PalCalc.UI.ScreenRecognition
         public bool IsRunning => monitor.IsRunning;
 
         public event Action<string> StatusChanged;
+        public event Action<LivePalObservation> ObservationEvaluated;
         public event Action<LivePalObservation> PalRecognized;
 
         public void Start() => monitor.Start();
@@ -55,6 +56,9 @@ namespace PalCalc.UI.ScreenRecognition
             try
             {
                 var observation = await recognizer.RecognizeAsync(regions);
+                if (observation?.Pal != null)
+                    App.Current.Dispatcher.BeginInvoke(() => ObservationEvaluated?.Invoke(observation));
+
                 if (observation?.CanBeAutomaticallyAdded != true)
                 {
                     var candidate = observation?.Pal?.LocalizedNames.GetValueOrElse(
