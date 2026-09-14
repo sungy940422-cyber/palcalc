@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace PalCalc.UI.ScreenRecognition
 {
@@ -33,6 +34,7 @@ namespace PalCalc.UI.ScreenRecognition
         public bool IsRunning => monitor.IsRunning;
 
         public event Action<string> StatusChanged;
+        public event Action<BitmapSource> RecognitionAttemptStarted;
         public event Action<LivePalObservation> ObservationEvaluated;
         public event Action<LivePalObservation> PalRecognized;
 
@@ -55,6 +57,7 @@ namespace PalCalc.UI.ScreenRecognition
 
             try
             {
+                App.Current.Dispatcher.Invoke(() => RecognitionAttemptStarted?.Invoke(regions.Name));
                 var observation = await recognizer.RecognizeAsync(regions);
                 if (observation != null)
                     App.Current.Dispatcher.Invoke(() => ObservationEvaluated?.Invoke(observation));
