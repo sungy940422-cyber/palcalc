@@ -64,10 +64,14 @@ namespace PalCalc.UI.ScreenRecognition
 
         public async Task<(OcrTextResult Name, OcrTextResult[] Passives)> ReadDetailsAsync(PalDetailsRegions regions)
         {
-            var nameTask = ReadAsync(regions.Name);
-            var passiveTasks = regions.Passives.Select(ReadAsync).ToArray();
-            await Task.WhenAll(passiveTasks.Append(nameTask));
-            return (await nameTask, passiveTasks.Select(task => task.Result).ToArray());
+            // OcrEngine does not support concurrent RecognizeAsync calls on the same
+            // instance, so process the small detail regions in order.
+            var name = await ReadAsync(regions.Name);
+            var passives = new OcrTextResult[regions.Passives.Count];
+            for (var i = 0; i < regions.Passives.Count; i++)
+                passives[i] = await ReadAsync(regions.Passives[i]);
+
+            return (name, passives);
         }
     }
 }
