@@ -14,6 +14,7 @@ namespace PalCalc.UI.ScreenRecognition
         public RecentRecognitionItem(LivePalObservation observation)
         {
             this.observation = observation ?? throw new ArgumentNullException(nameof(observation));
+            status = observation.CanBeAutomaticallyAdded ? "임시 인식" : "확인 필요";
         }
 
         public ImageSource Icon => PalViewModel.Make(observation.Pal).Icon;
