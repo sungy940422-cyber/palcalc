@@ -111,7 +111,7 @@ namespace PalCalc.UI.ViewModel
                         });
                     liveRecognition.StatusChanged += status =>
                         SetLiveRecognitionStatus(status);
-                    liveRecognition.PalRecognized += observation =>
+                    liveRecognition.ObservationEvaluated += observation =>
                         dispatcher.BeginInvoke(() =>
                         {
                             RecentRecognitions.Insert(0, new RecentRecognitionItem(observation));
