@@ -19,6 +19,7 @@ using Serilog;
 using Serilog.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -47,6 +48,7 @@ namespace PalCalc.UI.ViewModel
         private LiveRecognitionController liveRecognition;
         private ProvisionalPalSaveBridge provisionalPalBridge;
         private SaveGameViewModel activeSave;
+        private RecentRecognitionWindow recentRecognitionWindow;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LiveRecognitionActionLabel))]
@@ -56,6 +58,7 @@ namespace PalCalc.UI.ViewModel
         private string liveRecognitionStatus = "중지됨";
 
         public string LiveRecognitionActionLabel => IsLiveRecognitionRunning ? "자동 인식 중지" : "자동 인식 시작";
+        public ObservableCollection<RecentRecognitionItem> RecentRecognitions { get; } = [];
 
         public void SetActiveSave(SaveGameViewModel save)
         {
@@ -99,8 +102,22 @@ namespace PalCalc.UI.ViewModel
                         ActiveSave = activeSave
                     };
                     provisionalPalBridge.StatusChanged += status => SetLiveRecognitionStatus(status);
+                    provisionalPalBridge.PalConfirmed += confirmed =>
+                        dispatcher.BeginInvoke(() =>
+                        {
+                            var entry = RecentRecognitions.FirstOrDefault(x => x.Matches(confirmed));
+                            if (entry != null)
+                                entry.Status = "세이브 확인 완료";
+                        });
                     liveRecognition.StatusChanged += status =>
                         SetLiveRecognitionStatus(status);
+                    liveRecognition.PalRecognized += observation =>
+                        dispatcher.BeginInvoke(() =>
+                        {
+                            RecentRecognitions.Insert(0, new RecentRecognitionItem(observation));
+                            while (RecentRecognitions.Count > 10)
+                                RecentRecognitions.RemoveAt(RecentRecognitions.Count - 1);
+                        });
                 }
 
                 if (liveRecognition.IsRunning)
@@ -118,6 +135,23 @@ namespace PalCalc.UI.ViewModel
                 LiveRecognitionStatus = ex.Message;
                 AdonisMessageBox.Show(App.Current.MainWindow, ex.Message, "화면 자동 인식");
             }
+        }
+
+        [RelayCommand]
+        private void OpenRecentRecognitions()
+        {
+            if (recentRecognitionWindow?.IsVisible == true)
+            {
+                recentRecognitionWindow.Activate();
+                return;
+            }
+
+            recentRecognitionWindow = new RecentRecognitionWindow(RecentRecognitions)
+            {
+                Owner = App.Current.MainWindow
+            };
+            recentRecognitionWindow.Closed += (_, _) => recentRecognitionWindow = null;
+            recentRecognitionWindow.Show();
         }
 
         private void SetLiveRecognitionStatus(string status)
