@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -12,7 +13,9 @@ namespace PalCalc.UI.ScreenRecognition
         private readonly ScreenRecognitionProfile profile;
         private readonly TimeSpan interval;
         private CancellationTokenSource cancellation;
-        private ulong? previousFingerprint;
+        private ulong? processedFingerprint;
+        private ulong? pendingFingerprint;
+        private int pendingFingerprintSamples;
 
         public PalworldScreenMonitor(
             PalworldWindowCapture capture,
@@ -21,7 +24,7 @@ namespace PalCalc.UI.ScreenRecognition
         {
             this.capture = capture ?? throw new ArgumentNullException(nameof(capture));
             this.profile = profile ?? throw new ArgumentNullException(nameof(profile));
-            this.interval = interval ?? TimeSpan.FromMilliseconds(750);
+            this.interval = interval ?? TimeSpan.FromSeconds(2);
         }
 
         public event Action<PalDetailsRegions> DetailsChanged;
@@ -42,7 +45,9 @@ namespace PalCalc.UI.ScreenRecognition
             cancellation?.Cancel();
             cancellation?.Dispose();
             cancellation = null;
-            previousFingerprint = null;
+            processedFingerprint = null;
+            pendingFingerprint = null;
+            pendingFingerprintSamples = 0;
         }
 
         public void Dispose() => Stop();
@@ -59,9 +64,23 @@ namespace PalCalc.UI.ScreenRecognition
                     var details = ScreenRegionExtractor.ExtractDetails(frame, profile);
                     var fingerprint = Fingerprint(details.Name);
 
-                    if (fingerprint != previousFingerprint)
+                    if (!pendingFingerprint.HasValue || !IsSimilar(fingerprint, pendingFingerprint.Value))
                     {
-                        previousFingerprint = fingerprint;
+                        pendingFingerprint = fingerprint;
+                        pendingFingerprintSamples = 1;
+                    }
+                    else
+                    {
+                        pendingFingerprintSamples++;
+                    }
+
+                    // Require the same name region in two consecutive captures. This
+                    // prevents animated backgrounds and capture noise from repeatedly
+                    // launching expensive OCR while a detail screen is unchanged.
+                    if (pendingFingerprintSamples >= 2 &&
+                        (!processedFingerprint.HasValue || !IsSimilar(fingerprint, processedFingerprint.Value)))
+                    {
+                        processedFingerprint = fingerprint;
                         DetailsChanged?.Invoke(details);
                     }
 
@@ -81,6 +100,9 @@ namespace PalCalc.UI.ScreenRecognition
                 }
             }
         }
+
+        private static bool IsSimilar(ulong left, ulong right) =>
+            BitOperations.PopCount(left ^ right) <= 6;
 
         private static ulong Fingerprint(BitmapSource source)
         {
