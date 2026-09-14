@@ -9,6 +9,8 @@ namespace PalCalc.UI.ScreenRecognition
         public Pal Pal { get; init; }
         public PalGender? Gender { get; init; }
         public IReadOnlyList<PassiveSkill> PassiveSkills { get; init; } = [];
+        public string RawName { get; init; } = "";
+        public IReadOnlyList<string> RawPassives { get; init; } = [];
         public double Confidence { get; init; }
         public DateTime CapturedAtUtc { get; init; } = DateTime.UtcNow;
         public bool IsProvisional { get; init; } = true;
