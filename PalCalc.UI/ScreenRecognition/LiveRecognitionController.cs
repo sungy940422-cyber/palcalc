@@ -57,7 +57,7 @@ namespace PalCalc.UI.ScreenRecognition
             {
                 var observation = await recognizer.RecognizeAsync(regions);
                 if (observation != null)
-                    App.Current.Dispatcher.BeginInvoke(() => ObservationEvaluated?.Invoke(observation));
+                    App.Current.Dispatcher.Invoke(() => ObservationEvaluated?.Invoke(observation));
 
                 if (observation?.CanBeAutomaticallyAdded != true)
                 {
