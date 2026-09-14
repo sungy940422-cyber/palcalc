@@ -42,6 +42,11 @@ namespace PalCalc.UI.ScreenRecognition
                 Pal = palMatch.Value,
                 Gender = gender,
                 PassiveSkills = passiveMatches.Select(x => x.Match.Value).ToList(),
+                RawName = palName?.Text ?? "",
+                RawPassives = (passiveTexts ?? [])
+                    .Select(x => x?.Text)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToList(),
                 Confidence = scores.Count == 0 ? 0 : scores.Average(),
                 CapturedAtUtc = DateTime.UtcNow,
                 IsProvisional = true
