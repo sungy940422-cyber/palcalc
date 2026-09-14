@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -13,7 +12,6 @@ namespace PalCalc.UI.ScreenRecognition
         private readonly ScreenRecognitionProfile profile;
         private readonly TimeSpan interval;
         private CancellationTokenSource cancellation;
-        private ulong? processedFingerprint;
         private DateTime nextRecognitionAllowedUtc;
 
         public PalworldScreenMonitor(
@@ -44,7 +42,6 @@ namespace PalCalc.UI.ScreenRecognition
             cancellation?.Cancel();
             cancellation?.Dispose();
             cancellation = null;
-            processedFingerprint = null;
             nextRecognitionAllowedUtc = DateTime.MinValue;
         }
 
@@ -60,16 +57,13 @@ namespace PalCalc.UI.ScreenRecognition
                 {
                     var frame = capture.Capture();
                     var details = ScreenRegionExtractor.ExtractDetails(frame, profile);
-                    var fingerprint = Fingerprint(details.Name);
 
-                    // Process the first visible detail immediately. After that, require
-                    // a meaningful name-region change and apply a cooldown so capture
-                    // noise can never launch OCR continuously.
-                    if (DateTime.UtcNow >= nextRecognitionAllowedUtc &&
-                        (!processedFingerprint.HasValue || !IsSimilar(fingerprint, processedFingerprint.Value)))
+                    // Poll at a fixed low rate. Depending on the graphics driver,
+                    // fingerprints from PrintWindow/BitBlt can remain stale even after
+                    // the game UI changes, so they must not gate recognition.
+                    if (DateTime.UtcNow >= nextRecognitionAllowedUtc)
                     {
-                        processedFingerprint = fingerprint;
-                        nextRecognitionAllowedUtc = DateTime.UtcNow.AddSeconds(5);
+                        nextRecognitionAllowedUtc = DateTime.UtcNow.AddSeconds(6);
                         DetailsChanged?.Invoke(details);
                     }
 
@@ -90,33 +84,5 @@ namespace PalCalc.UI.ScreenRecognition
             }
         }
 
-        private static bool IsSimilar(ulong left, ulong right) =>
-            BitOperations.PopCount(left ^ right) <= 6;
-
-        private static ulong Fingerprint(BitmapSource source)
-        {
-            const int sampleWidth = 16;
-            const int sampleHeight = 8;
-            var resized = new TransformedBitmap(
-                source,
-                new ScaleTransform(sampleWidth / (double)source.PixelWidth, sampleHeight / (double)source.PixelHeight)
-            );
-            var converted = new FormatConvertedBitmap(resized, PixelFormats.Gray8, null, 0);
-            var pixels = new byte[sampleWidth * sampleHeight];
-            converted.CopyPixels(pixels, sampleWidth, 0);
-
-            long sum = 0;
-            foreach (var pixel in pixels) sum += pixel;
-            var average = sum / pixels.Length;
-
-            ulong result = 0;
-            for (var i = 0; i < 64; i++)
-            {
-                var pairAverage = (pixels[i * 2] + pixels[i * 2 + 1]) / 2;
-                if (pairAverage >= average)
-                    result |= 1UL << i;
-            }
-            return result;
-        }
     }
 }
