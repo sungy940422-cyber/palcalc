@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Brand\WishAssistant.png" />
     <None Update="ScreenRecognition\Profiles\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
