@@ -14,14 +14,18 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- 위시를 말풍선 안에 배치해 화면 배율과 창 크기에 관계없이 전신이 보이게 한다. -->
-                <Image Grid.Column="0"
-                       Width="126" Height="140"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Stretch="Uniform"
-                       SnapsToDevicePixels="True"
-                       RenderOptions.BitmapScalingMode="HighQuality"
-                       Source="/PalCalc.UI;component/Resources/Brand/WishAssistant.png" />
+                <Viewbox Grid.Column="0"
+                         Width="126" Height="140"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Stretch="Uniform"
+                         StretchDirection="DownOnly">
+                    <Image Width="1292" Height="1217"
+                           Stretch="Fill"
+                           SnapsToDevicePixels="True"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Source="/PalCalc.UI;component/Resources/Brand/WishAssistant.png" />
+                </Viewbox>
 
                 <Grid Grid.Column="1" Margin="8,2,2,2">
                     <Grid.RowDefinitions>
@@ -30,7 +34,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <DockPanel>
-                        <TextBlock Text="WISH · FIX 3" Foreground="{StaticResource OveraguyoSkyBrush}"
+                        <TextBlock Text="WISH · FIX 4" Foreground="{StaticResource OveraguyoSkyBrush}"
                                    FontWeight="Bold" FontSize="13" />
                         <Button DockPanel.Dock="Right" Content="×" Width="23" Height="23"
                                 Padding="0" Command="{Binding HideWishAssistantCommand}"

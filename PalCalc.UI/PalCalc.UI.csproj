@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <AssemblyName>OVERAGUYO_PAL_LAB_WISH_FIX</AssemblyName>
+    <AssemblyName>OVERAGUYO_PAL_LAB_WISH_FIX_4</AssemblyName>
     <TargetFramework>net9.0-windows10.0.17763.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <FileVersion></FileVersion>
