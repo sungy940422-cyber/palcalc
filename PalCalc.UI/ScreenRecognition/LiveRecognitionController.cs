@@ -3,7 +3,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -14,7 +13,6 @@ namespace PalCalc.UI.ScreenRecognition
         private readonly PalworldScreenMonitor monitor;
         private readonly LivePalRecognizer recognizer;
         private readonly Dictionary<string, DateTime> recentObservations = [];
-        private int recognitionInProgress;
         private static readonly TimeSpan DuplicateWindow = TimeSpan.FromSeconds(5);
 
         public LiveRecognitionController(PalDB database)
@@ -47,14 +45,8 @@ namespace PalCalc.UI.ScreenRecognition
             monitor.Dispose();
         }
 
-        private async void Monitor_DetailsChanged(PalDetailsRegions regions)
+        private async Task Monitor_DetailsChanged(PalDetailsRegions regions)
         {
-            // Windows.Media.Ocr.OcrEngine permits only one RecognizeAsync call at a
-            // time. Screen changes can arrive while the previous frame is still being
-            // processed, so discard overlapping frames and process the next change.
-            if (Interlocked.Exchange(ref recognitionInProgress, 1) == 1)
-                return;
-
             try
             {
                 App.Current.Dispatcher.Invoke(() => RecognitionAttemptStarted?.Invoke(regions.Name));
@@ -96,10 +88,6 @@ namespace PalCalc.UI.ScreenRecognition
             catch (Exception ex)
             {
                 StatusChanged?.Invoke($"화면 인식 오류: {ex.Message}");
-            }
-            finally
-            {
-                Interlocked.Exchange(ref recognitionInProgress, 0);
             }
         }
 

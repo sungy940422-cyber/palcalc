@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="PalCalc.UI.View.AboutWindow"
+<adonisControls:AdonisWindow x:Class="PalCalc.UI.View.AboutWindow"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -31,7 +31,16 @@
             </Style>
         </StackPanel.Resources>
 
-        <Label Content="{Binding Title}" FontWeight="Bold" FontSize="20" />
+        <Label Content="OVERAGUYO PAL LAB" FontWeight="Bold" FontSize="20"
+               Foreground="{StaticResource OveraguyoSkyBrush}" />
+        <TextBlock Text="오버라구요의 팰 교배 연구소" FontWeight="SemiBold" />
+        <TextBlock Text="Customized by OVERAGUYO" Margin="0,2,0,0" />
+        <TextBlock Margin="0,3,0,0">
+            <Hyperlink NavigateUri="https://github.com/sungy940422-cyber/palcalc" RequestNavigate="Hyperlink_RequestNavigate">OVERAGUYO PAL LAB on GitHub</Hyperlink>
+        </TextBlock>
+
+        <Separator />
+        <Label Content="{Binding Title}" FontWeight="Bold" FontSize="14" />
 
         <TextBlock Text="by Tyler Camp" />
         <TextBlock>

@@ -1,4 +1,4 @@
-﻿using PalCalc.Model;
+using PalCalc.Model;
 using PalCalc.UI.Localization;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,6 +143,8 @@ namespace PalCalc.UI.Model
         public TranslationLocale Locale { get; set; } = TranslationLocale.en;
 
         public bool IsDarkTheme { get; set; } = true;
+
+        public bool IsWishAssistantVisible { get; set; } = true;
 
         public BreedingResultListColumnSettings BreedingResultListColumns { get; set; } = new();
 

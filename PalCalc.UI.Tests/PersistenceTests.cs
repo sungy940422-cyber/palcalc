@@ -73,6 +73,7 @@ namespace PalCalc.UI.Tests
                 File.ReadAllText(Path.Combine(path, "settings.json"))
             );
             Assert.IsFalse(currentSettings.IsDarkTheme);
+            Assert.IsTrue(currentSettings.IsWishAssistantVisible);
             CollectionAssert.Contains(currentSettings.SolverSettings.BannedSurgeryPassiveInternalNames, "user-choice");
             CollectionAssert.Contains(currentSettings.SolverSettings.BannedSurgeryPassiveInternalNames, "SwimSpeed_up_3");
 
@@ -290,6 +291,7 @@ namespace PalCalc.UI.Tests
                   "SelectedGameIdentifier": null,
                   "Locale": 1,
                   "IsDarkTheme": true,
+                  "IsWishAssistantVisible": true,
                   "BreedingResultListColumns": {"ColumnVisibility": {}, "ColumnOrder": []},
                   "UiLayout": {"Windows": {}, "Grids": {}},
                   "SkippedAppVersion": null,

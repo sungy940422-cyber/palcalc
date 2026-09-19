@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PalCalc.Model;
 using PalCalc.SaveReader;
@@ -346,6 +346,8 @@ namespace PalCalc.UI.ViewModel
             var cachedData = OpenedSave.CachedValue;
             if (cachedData == null) return;
 
+            WishAssistantService.Publish("목표 패시브까지 이어지는 교배 경로를 계산하고 있어!", "집중");
+
             var initialSpec = PalTarget.InitialPalSpecifier;
 
             if (initialSpec == null)
@@ -409,12 +411,20 @@ namespace PalCalc.UI.ViewModel
 
                 SaveTarget(currentSpec);
                 SaveTargetList(PalTargetList);
+
+                WishAssistantService.Publish(
+                    job.Results.Count == 0
+                        ? "조건에 맞는 경로를 못 찾았어. 최대 교배 단계나 허용 팰을 조금 넓혀보자."
+                        : $"찾았다! 추천 교배 경로 {job.Results.Count}개를 정리했어.",
+                    job.Results.Count == 0 ? "아쉬움" : "성공"
+                );
             };
 
             job.JobCancelled += (job) =>
             {
                 initialSpec.LatestJob = null;
                 currentSpec.LatestJob = null;
+                WishAssistantService.Publish("계산을 멈췄어. 조건을 바꿔서 다시 시작할 수 있어.", "기본");
             };
 
             // initialSpec is the original target stored in the pal target list; assign latest job so it can show busy/paused/idle state

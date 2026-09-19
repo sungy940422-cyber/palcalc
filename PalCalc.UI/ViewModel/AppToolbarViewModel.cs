@@ -1,4 +1,4 @@
-﻿using AdonisUI;
+using AdonisUI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
@@ -57,6 +57,24 @@ namespace PalCalc.UI.ViewModel
         [ObservableProperty]
         private string liveRecognitionStatus = "중지됨";
 
+        [ObservableProperty]
+        private string wishMessage = "어서 와! 오늘은 어떤 팰을 만들어볼까?";
+
+        [ObservableProperty]
+        private string wishMoodLabel = "기본";
+
+        private bool isWishAssistantVisible;
+        public bool IsWishAssistantVisible
+        {
+            get => isWishAssistantVisible;
+            set
+            {
+                if (!SetProperty(ref isWishAssistantVisible, value)) return;
+                settings.IsWishAssistantVisible = value;
+                Storage.SaveAppSettings(settings);
+            }
+        }
+
         public string LiveRecognitionActionLabel => IsLiveRecognitionRunning ? "자동 인식 중지" : "자동 인식 시작";
         public ObservableCollection<RecentRecognitionItem> RecentRecognitions { get; } = [];
 
@@ -65,12 +83,23 @@ namespace PalCalc.UI.ViewModel
             activeSave = save;
             if (provisionalPalBridge != null)
                 provisionalPalBridge.ActiveSave = save;
+
+            if (save == null)
+                ShowWish("사용할 세이브를 골라줘. 내가 보유 팰을 정리해줄게!", "궁금");
+            else
+                ShowWish("세이브를 불러왔어! 목표 팰과 패시브를 골라보자.", "신남");
         }
 
         public AppToolbarViewModel(Dispatcher dispatcher, AppSettings settings)
         {
             this.dispatcher = dispatcher;
             this.settings = settings;
+            isWishAssistantVisible = settings.IsWishAssistantVisible;
+            WishAssistantService.NoticePublished += notice =>
+            {
+                if (dispatcher.CheckAccess()) ShowWish(notice.Message, notice.Mood);
+                else dispatcher.BeginInvoke(() => ShowWish(notice.Message, notice.Mood));
+            };
             ApplyTheme(settings.IsDarkTheme, saveSettings: false);
         }
 
@@ -129,9 +158,15 @@ namespace PalCalc.UI.ViewModel
                 }
 
                 if (liveRecognition.IsRunning)
+                {
                     liveRecognition.Stop();
+                    ShowWish("자동 인식을 잠시 멈췄어.", "기본");
+                }
                 else
+                {
                     liveRecognition.Start();
+                    ShowWish("팰 상세 화면을 열어줘. 내가 이름과 패시브를 읽어볼게!", "궁금");
+                }
 
                 IsLiveRecognitionRunning = liveRecognition.IsRunning;
                 if (!IsLiveRecognitionRunning)
@@ -141,8 +176,19 @@ namespace PalCalc.UI.ViewModel
             {
                 IsLiveRecognitionRunning = false;
                 LiveRecognitionStatus = ex.Message;
+                ShowWish("화면 인식을 시작하지 못했어. 설정과 팰 상세 화면을 확인해줘.", "당황");
                 AdonisMessageBox.Show(App.Current.MainWindow, ex.Message, "화면 자동 인식");
             }
+        }
+
+        [RelayCommand]
+        private void HideWishAssistant() => IsWishAssistantVisible = false;
+
+        [RelayCommand]
+        private void ResetWishMessage()
+        {
+            IsWishAssistantVisible = true;
+            ShowWish("언제나 네 소원이 여기 있어! 필요한 교배 경로를 같이 찾아보자.", "응원");
         }
 
         [RelayCommand]
@@ -164,10 +210,57 @@ namespace PalCalc.UI.ViewModel
 
         private void SetLiveRecognitionStatus(string status)
         {
-            if (dispatcher.CheckAccess())
+            void Apply()
+            {
                 LiveRecognitionStatus = status;
-            else
-                dispatcher.BeginInvoke(() => LiveRecognitionStatus = status);
+                UpdateWishForStatus(status);
+            }
+
+            if (dispatcher.CheckAccess()) Apply();
+            else dispatcher.BeginInvoke(Apply);
+        }
+
+        private void UpdateWishForStatus(string status)
+        {
+            if (string.IsNullOrWhiteSpace(status)) return;
+
+            if (status.Contains("오류", StringComparison.OrdinalIgnoreCase) ||
+                status.Contains("실패", StringComparison.OrdinalIgnoreCase) ||
+                status.Contains("찾지 못", StringComparison.OrdinalIgnoreCase) ||
+                status.Contains("읽을 수 없", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowWish("인식이 잘 안 됐어. 팰 상세 화면을 완전히 띄우고 다시 보여줘!", "당황");
+                return;
+            }
+
+            if (status.Contains("세이브에서 확인", StringComparison.OrdinalIgnoreCase) ||
+                status.Contains("확인 완료", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowWish($"좋아! {status}", "성공");
+                return;
+            }
+
+            if (status.Contains("임시 인식", StringComparison.OrdinalIgnoreCase) ||
+                status.Contains("임시 목록에 추가", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowWish($"찾았어! {status.Replace("임시 인식:", "").Trim()}", "신남");
+                return;
+            }
+
+            if (status.Contains("중복", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowWish("같은 팰은 한 번만 정리해둘게.", "기본");
+                return;
+            }
+
+            if (status.Contains("찾는 중", StringComparison.OrdinalIgnoreCase))
+                ShowWish("팰월드 창을 찾고 있어. 잠깐만 기다려줘!", "궁금");
+        }
+
+        private void ShowWish(string message, string mood)
+        {
+            WishMessage = message;
+            WishMoodLabel = mood;
         }
 
         [RelayCommand]

@@ -1,4 +1,4 @@
-﻿<Application x:Class="PalCalc.UI.App"
+<Application x:Class="PalCalc.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PalCalc.UI"
@@ -12,6 +12,7 @@
 
                 <ResourceDictionary Source="Themes/StyleAdjustments.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/PalCalc.UI;component/Themes/PalCalcDark.xaml" />
+                <ResourceDictionary Source="Themes/OveraguyoBrand.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PalCalc.UI.View.AppToolbar"
+<UserControl x:Class="PalCalc.UI.View.AppToolbar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -25,15 +25,22 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Theme" Padding="5">
-            <MenuItem Header="Light"
+        <MenuItem Header="화면 테마" Padding="5">
+            <MenuItem Header="밝게"
                       IsCheckable="True"
                       IsChecked="{Binding IsLightTheme, Mode=OneWay}"
                       Command="{Binding UseLightThemeCommand}" />
-            <MenuItem Header="Dark"
+            <MenuItem Header="어둡게"
                       IsCheckable="True"
                       IsChecked="{Binding IsDarkTheme, Mode=OneWay}"
                       Command="{Binding UseDarkThemeCommand}" />
+        </MenuItem>
+        <MenuItem Header="위시 도우미" Padding="5">
+            <MenuItem Header="위시 도우미 표시"
+                      IsCheckable="True"
+                      IsChecked="{Binding IsWishAssistantVisible, Mode=TwoWay}" />
+            <MenuItem Header="위시 인사 다시 보기"
+                      Command="{Binding ResetWishMessageCommand}" />
         </MenuItem>
         <MenuItem Header="화면 인식" Padding="5">
             <MenuItem Header="{Binding LiveRecognitionActionLabel}"
