@@ -26,5 +26,5 @@ jobs:
       - name: Upload executable
         uses: actions/upload-artifact@v7
         with:
-          name: OVERAGUYO-Palworld-Breeding-Assistant
+          name: OVERAGUYO-Palworld-Breeding-Assistant-WISH-FIX-5
           path: publish/Bundled/**

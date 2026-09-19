@@ -34,7 +34,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <DockPanel>
-                        <TextBlock Text="WISH · FIX 4" Foreground="{StaticResource OveraguyoSkyBrush}"
+                        <TextBlock Text="WISH · FIX 5" Foreground="{StaticResource OveraguyoSkyBrush}"
                                    FontWeight="Bold" FontSize="13" />
                         <Button DockPanel.Dock="Right" Content="×" Width="23" Height="23"
                                 Padding="0" Command="{Binding HideWishAssistantCommand}"
