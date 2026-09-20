@@ -1,0 +1,53 @@
+<adonisControls:AdonisWindow x:Class="PalCalc.UI.View.RecentRecognitionWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    Title="최근 화면 인식" Width="720" Height="460"
+    MinWidth="560" MinHeight="300"
+    WindowStartupLocation="CenterOwner"
+    IconVisibility="Collapsed"
+    WindowStyle="ToolWindow">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="최근 인식한 팰 (최대 10마리)"
+                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" />
+        <ListView Grid.Row="1" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="0,0,0,1" Padding="6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="64" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="130" />
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{Binding Icon}" Width="52" Height="52"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            <StackPanel Grid.Column="1" Margin="8,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Gender}" Margin="10,2,0,0" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding Passives}" Margin="0,7,0,0"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding RawName}" Margin="0,4,0,0"
+                                           Opacity="0.7" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                <TextBlock Text="{Binding Status}" FontWeight="SemiBold"
+                                           HorizontalAlignment="Right" />
+                                <TextBlock Text="{Binding Confidence, StringFormat=정확도 {0}}"
+                                           Margin="0,6,0,0" HorizontalAlignment="Right" />
+                                <TextBlock Text="{Binding CapturedAt}"
+                                           Margin="0,4,0,0" HorizontalAlignment="Right" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</adonisControls:AdonisWindow>

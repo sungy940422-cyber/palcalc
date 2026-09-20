@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="PalCalc.UI.AppWindow"
+<adonisControls:AdonisWindow x:Class="PalCalc.UI.AppWindow"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,23 +12,57 @@
                              xmlns:behaviors="clr-namespace:PalCalc.UI.View.Behaviors"
                              d:DataContext="{d:DesignInstance Type=vm:AppWindowViewModel}"
                              mc:Ignorable="d"
-                             Title="{itl:LocalizedText LC_WINDOW_TITLE}"
+                             Title="OVERAGUYO PAL LAB - 오버라구요의 팰 교배 연구소"
                              Width="1280" Height="720"
                              MinWidth="480" MinHeight="360"
                              behaviors:WindowPlacementBehavior.Key="MainWindow"
                              IconVisibility="Collapsed">
     <Window.Resources>
         <vmc:ValueVisibilityConverter x:Key="VVC" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
     </Window.Resources>
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
     </Window.Style>
-    <DockPanel>
-        <Grid DockPanel.Dock="Top"
-              Visibility="{Binding ShowToolbar, Converter={StaticResource VVC}}">
-            <v:AppToolbar DataContext="{Binding ToolbarVM}" />
-        </Grid>
+    <Grid>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top"
+                  Visibility="{Binding ShowToolbar, Converter={StaticResource VVC}}">
+                <v:AppToolbar DataContext="{Binding ToolbarVM}" />
+            </Grid>
 
-        <ContentControl Content="{Binding Content}" />
-    </DockPanel>
+            <Border DockPanel.Dock="Top"
+                    Height="54"
+                    Padding="18,0"
+                    Background="{StaticResource OveraguyoHeaderBrush}"
+                    Visibility="{Binding ShowToolbar, Converter={StaticResource VVC}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="✦" FontSize="27" Foreground="{StaticResource OveraguyoStarBrush}"
+                               VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="OVERAGUYO PAL LAB" Foreground="White"
+                                   FontWeight="Bold" FontSize="17" />
+                        <TextBlock Text="오버라구요의 팰 교배 연구소" Foreground="#DDEFFF"
+                                   FontSize="11" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="보유 팰 · 패시브 · 최적 교배 경로"
+                               Foreground="#EAF7FF" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <ContentControl Content="{Binding Content}" />
+        </DockPanel>
+
+        <v:WishAssistantControl DataContext="{Binding ToolbarVM}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,18,18"
+                                Panel.ZIndex="50"
+                                Visibility="{Binding ToolbarVM.IsWishAssistantVisible, Converter={StaticResource BoolToVisibility}}" />
+    </Grid>
 </adonisControls:AdonisWindow>

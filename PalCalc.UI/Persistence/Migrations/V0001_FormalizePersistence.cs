@@ -270,6 +270,7 @@ namespace PalCalc.UI.Persistence.Migrations
                 ["SelectedGameIdentifier"] = NullableStringToken(root["SelectedGameIdentifier"]),
                 ["Locale"] = ReadLocale(root["Locale"]),
                 ["IsDarkTheme"] = ReadBool(root["IsDarkTheme"], true),
+                ["IsWishAssistantVisible"] = ReadBool(root["IsWishAssistantVisible"], true),
                 ["BreedingResultListColumns"] = NormalizeColumns(root["BreedingResultListColumns"] as JObject),
                 ["UiLayout"] = NormalizeUiLayout(root["UiLayout"] as JObject),
                 ["SkippedAppVersion"] = NullableStringToken(root["SkippedAppVersion"]),

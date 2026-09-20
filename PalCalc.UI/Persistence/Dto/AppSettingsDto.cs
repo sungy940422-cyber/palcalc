@@ -16,6 +16,10 @@ namespace PalCalc.UI.Persistence.Dto
         public List<PalListPresetDto> PalListPresets { get; init; }
         public TranslationLocale Locale { get; init; }
         public bool IsDarkTheme { get; init; }
+
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Populate)]
+        [System.ComponentModel.DefaultValue(true)]
+        public bool IsWishAssistantVisible { get; init; } = true;
         public BreedingResultListColumnSettingsDto BreedingResultListColumns { get; init; }
         public UiLayoutSettingsDto UiLayout { get; init; }
 
